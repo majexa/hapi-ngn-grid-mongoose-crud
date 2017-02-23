@@ -1,5 +1,5 @@
 {
-  "name": "ngn-grid-hapi-mongoose-crud",
+  "name": "hapi-ngn-grid-mongoose-crud",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/majexa/ngn-grid-hapi-mongoose-crud.git"
+    "url": "git+https://github.com/majexa/hapi-ngn-grid-mongoose-crud.git"
   },
   "author": "Andrey Yartsev",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/majexa/ngn-grid-hapi-mongoose-crud/issues"
+    "url": "https://github.com/majexa/hapi-ngn-grid-mongoose-crud/issues"
   },
-  "homepage": "https://github.com/majexa/ngn-grid-hapi-mongoose-crud#readme",
+  "homepage": "https://github.com/majexa/hapi-ngn-grid-mongoose-crud#readme",
   "dependencies": {
     "ngn-grid-items": "^1.0.0"
   }
