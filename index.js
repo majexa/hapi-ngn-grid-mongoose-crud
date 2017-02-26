@@ -73,10 +73,10 @@ module.exports = function (name, model, opt) {
     method: 'GET',
     path: opt.apiBase + name + '/{id}/delete',
     handler: (request, reply) => {
-      request.db.Challenge.findOne({
-        _id: ObjectId(request.query.id)
-      }, (err, r) => {
-        reply(r);
+      request.db[ucFirst(name)].findOne({
+        _id: ObjectId(request.params.id)
+      }).remove().exec((err, r) => {
+        reply({success: 1});
       });
     }
   };
