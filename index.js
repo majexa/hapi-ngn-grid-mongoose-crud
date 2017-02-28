@@ -10,7 +10,8 @@ module.exports = function (name, model, opt) {
   if (!opt) opt = {};
   if (!opt.apiBase) opt.apiBase = '/api/v1/';
   const listRoutes = function (name, model) {
-    const path = opt.apiBase + name + 's';
+    let path = opt.apiBase + name + 's';
+    if (opt.extendPath) path += opt.extendPath
     const r = {
       method: 'GET',
       handler: (request, reply) => {
