@@ -15,11 +15,19 @@ module.exports = function (name, model, opt) {
     const r = {
       method: 'GET',
       handler: (request, reply) => {
+        // =========== HARDCODE ==========
+        if (request.params.challengeId) {
+          opt.filter = {
+            challengeId: ObjectId(request.params.challengeId)
+          };
+          console.log('Filtered by ' + request.params.challengeId);
+        }
+        // ===============================
         if (!request.db[modelName]) {
           throw new Error('Model "' + modelName + '" is not in existing: ' + Object.keys(request.db));
         }
         items(
-          {},
+          opt.filter || {},
           request.params.pg || 1,
           path,
           request.db[modelName],
@@ -60,7 +68,6 @@ module.exports = function (name, model, opt) {
     method: 'POST',
     path: opt.apiBase + name + '/{id}',
     handler: (request, reply) => {
-      console.log('>>>> ' + ObjectId(request.params.id));
       request.db[modelName].update({
         _id: ObjectId(request.params.id)
       }, {
