@@ -1,6 +1,6 @@
 {
   "name": "hapi-ngn-grid-mongoose-crud",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Hapi plugin to make RESP api for the CRUD operation by mongoose driver",
   "main": "index.js",
   "scripts": {

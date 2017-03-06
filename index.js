@@ -6,6 +6,7 @@ const ucFirst = function (str) {
 };
 
 module.exports = function (name, model, opt) {
+  const ownerFieldName = name + 's';
   const modelName = ucFirst(name);
   if (!opt) opt = {};
   if (!opt.apiBase) opt.apiBase = '/api/v1/';
@@ -59,8 +60,27 @@ module.exports = function (name, model, opt) {
     method: 'POST',
     path: opt.apiBase + name,
     handler: (request, reply) => {
-      request.db[modelName].create(request.payload, () => {
-        reply({success: 1});
+      request.db[modelName].create(request.payload, (err, createdModel) => {
+        if (err) throw new Error(err);
+        const paths = request.db[modelName].schema.paths;
+        let v;
+        for (let mongoPath in paths) {
+          v = paths[mongoPath];
+          if (v.options && v.options.ref) {
+            let ownerCollection = v.options.ref;
+            let ownerIdName = v.path;
+            request.db[ownerCollection].findOne({
+              _id: request.payload[ownerIdName]
+            }, function(err, ownerModel) {
+              if (err) console.error(err);
+              ownerModel[ownerFieldName].push(createdModel);
+              ownerModel.save(function(err) {
+                if (err) console.error(err);
+              })
+            });
+          }
+        }
+        reply(createdModel);
       });
     }
   };
