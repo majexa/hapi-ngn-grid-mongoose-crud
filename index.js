@@ -80,7 +80,7 @@ module.exports = function (name, model, opt) {
             });
           }
         }
-        reply(createdModel);
+        opt.onCreate ? opt.onCreate(request, reply, createdModel) : reply(createdModel);
       });
     }
   };
@@ -88,12 +88,14 @@ module.exports = function (name, model, opt) {
     method: 'POST',
     path: opt.apiBase + name + '/{id}',
     handler: (request, reply) => {
+      let user = {_id: request.params.id};
+      user = Object.assign(user, request.payload);
       request.db[modelName].update({
         _id: ObjectId(request.params.id)
       }, {
         $set: request.payload
       }, (err, r) => {
-        reply(r);
+        opt.onUpdate ? opt.onUpdate(request, reply, user, r) : reply(r);
       });
     }
   };
