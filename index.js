@@ -16,14 +16,6 @@ module.exports = function (name, model, opt) {
     const r = {
       method: 'GET',
       handler: (request, reply) => {
-        // =========== HARDCODE ==========
-        if (request.params.challengeId) {
-          opt.filter = {
-            challengeId: ObjectId(request.params.challengeId)
-          };
-          console.log('Filtered by ' + request.params.challengeId);
-        }
-        // ===============================
         if (!request.db[modelName]) {
           throw new Error('Model "' + modelName + '" is not in existing: ' + Object.keys(request.db));
         }
