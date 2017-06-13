@@ -11,7 +11,7 @@ const dbConnect = require('./lib/db');
 dbConnect().then((models) => {
   const server = new Hapi.Server();
   server.decorate('request', 'db', models);
-  server.route(debugRoutes(crud('modelName', db.ModelName, {
+  server.route(debugRoutes(crud('modelName', models.ModelName, {
     filter: {
       $ne: {
         someKey: null
