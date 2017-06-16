@@ -43,7 +43,7 @@ module.exports = function (name, model, opt) {
     handler: (request, reply) => {
       request.db[modelName].findOne({
         _id: ObjectId(request.params.id)
-      }, (err, r) => {
+      }, model, (err, r) => {
         reply(r);
       });
     }
@@ -52,27 +52,35 @@ module.exports = function (name, model, opt) {
     method: 'POST',
     path: opt.apiBase + name,
     handler: (request, reply) => {
-      request.db[modelName].create(request.payload, (err, createdModel) => {
-        if (err) throw new Error(err);
-        const paths = request.db[modelName].schema.paths;
-        let v;
-        for (let mongoPath in paths) {
-          v = paths[mongoPath];
-          if (v.options && v.options.ref) {
-            let ownerCollection = v.options.ref;
-            let ownerIdName = v.path;
-            request.db[ownerCollection].findOne({
-              _id: request.payload[ownerIdName]
-            }, function(err, ownerModel) {
-              if (err) console.error(err);
-              ownerModel[ownerFieldName].push(createdModel);
-              ownerModel.save(function(err) {
-                if (err) console.error(err);
-              })
-            });
-          }
+      let data = request.payload;
+      if (opt.createFilter) data = opt.createFilter(data);
+      request.db[modelName].create(data, (err, createdModel) => {
+        if (err) {
+            reply({validError: err.errmsg});
+            return;
         }
-        opt.onCreate ? opt.onCreate(request, reply, createdModel) : reply(createdModel);
+        //throw new Error(err);
+        const schemaPaths = request.db[modelName].schema.paths;
+        let v;
+        // for (let schemaPath in schemaPaths) {
+        //   v = schemaPaths[schemaPath];
+        //   if (v.options && v.options.ref) {
+        //     let ownerCollection = v.options.ref;
+        //     let ownerIdName = v.path;
+        //     request.db[ownerCollection].findOne({
+        //       _id: request.payload[ownerIdName]
+        //     }, function(err, ownerModel) {
+        //       if (err) console.error(err);
+        //       ownerModel[ownerFieldName].push(createdModel);
+        //       ownerModel.save(function(err) {
+        //         if (err) console.error(err);
+        //       })
+        //     });
+        //   }
+        // }
+        opt.onCreate ? //
+            opt.onCreate(request, reply, createdModel) :
+            reply(createdModel);
       });
     }
   };
@@ -81,7 +89,9 @@ module.exports = function (name, model, opt) {
     path: opt.apiBase + name + '/{id}',
     handler: (request, reply) => {
       let user = {_id: request.params.id};
-      user = Object.assign(user, request.payload);
+      let data = request.payload;
+      if (opt.updateFilter) data = opt.updateFilter(data);
+      user = Object.assign(data, user);
       request.db[modelName].update({
         _id: ObjectId(request.params.id)
       }, {
